@@ -8,7 +8,7 @@ class CharactersList:
         return "Characters List Object..."
     
     def get_char(self, **kwargs):
-        
+        """Get Single Character from passed kwargs."""  
         params = [kwargs['player'],
                   kwargs['region'],
                   kwargs['realm']
@@ -19,4 +19,4 @@ class CharactersList:
             f'&fields=mythic_plus_scores_by_season%3Acurrent'
         )
         characters = r.get(rqs)
-        return characters.json()
+        return characters.status_code, characters.json()

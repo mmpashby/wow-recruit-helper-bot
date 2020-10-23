@@ -18,14 +18,19 @@ async def on_ready():
 @bot.command(name='recruit',
              help='Provides rudimentary recommendation engine for recruitment purposes.',
              usage='[PlayerName] [Role] [Region] [Realm]')
-async def recruit(ctx, player, role, region, realm):
+async def recruit(ctx, player: str, role: str, region: str, realm: str):
     sr = raiderio.resource("characters")
     s_params = {'player': player,
                 'role': role,
                 'region': region,
                 'realm': realm}
-    rsp =  sr.get_char(**s_params)
+    stat_code, grsp =  sr.get_char(**s_params)
+    if stat_code == 200:
+        rsp = grsp
+    elif stat_code == 400:
+        rsp = "Character Not Found..."
+    else:
+        rsp = "Unknown Error..."
     await ctx.send(rsp)
-
 
 bot.run(TOKEN)
