@@ -16,7 +16,7 @@ class CharactersList:
         rqs = (
             f'{self.api_url}/characters/profile?region={params[1].lower()}'
             f'&realm={params[2].lower()}&name={params[0].lower()}'
-            f'&fields=mythic_plus_scores_by_season%3Acurrent'
+            f'&fields=gear%2Cmythic_plus_scores_by_season%3Acurrent'
         )
         characters = r.get(rqs)
         return characters.status_code, characters.json()
