@@ -2,6 +2,7 @@
 import os
 import sys
 import discord
+from discord.embeds import Embed
 import requests as r
 import raiderio
 
@@ -20,13 +21,20 @@ class RecruitDecision:
     def __init__(self, role, apirsp):
         self.role = role
         self.body = apirsp
-        self.rolescore = self.body['mythic_plus_scores_by_season'][0]['scores'][self.role]
+        self.rolescore = self.get_role_score()
         self.onehundredp = NO_DUNGEONS_CS * FIFTTEEN_TIMED
         self.sixtysixp = round(((NO_DUNGEONS_CS * 2) / 3) * FIFTTEEN_TIMED)
         self.recruitanswer = self.getdecision()
 
     def __str__(self):
         return "Recruit Decision Object..."
+
+    def get_role_score(self):
+        try:
+            rolescore = self.body['mythic_plus_scores_by_season'][0]['scores'][self.role]
+        except KeyError:
+            rolescore = 0
+        return rolescore
 
     def getdecision(self):
         decision = "Unknown..."
@@ -41,11 +49,12 @@ class RecruitDecision:
     def readymsg(self):
         """Make message to discord look ok"""
         prsp = (
-            f"CharName: {self.body['name']}\n",
-            f"ilvl: {self.body['gear']['item_level_equipped']}\n",
-            f"profilepicthumb: {self.body['thumbnail_url']}\n",
-            f"Role Score (current season): {self.rolescore}\n",
-            f"Recruit(?): {self.recruitanswer}"
+            f"**CharName:** {self.body['name']}\n",
+            f"**Class:** {self.body['class']}\n",
+            f"**Role:** {self.role}\n",
+            f"**ilvl:** {self.body['gear']['item_level_equipped']}\n",
+            f"**Role Score (current season):** {self.rolescore}\n",
+            f"**Recruit(?):** {self.recruitanswer}"
         )
         return prsp
 
@@ -64,7 +73,7 @@ async def on_ready():
 
 @bot.command(name='recruit',
              help='Provides rudimentary recommendation engine for recruitment purposes.',
-             usage='[PlayerName] [Role] [Region] [Realm]')
+             usage='[PlayerName] [Role:dps/healer/tank] [Region] [Realm]')
 async def recruit(ctx, player: str, role: str, region: str, realm: str):
     sr = raiderio.resource("characters")
     s_params = {'player': player,
@@ -79,6 +88,9 @@ async def recruit(ctx, player: str, role: str, region: str, realm: str):
     else:
         rsp = "Unknown Error..."
     descision = RecruitDecision(role, rsp)
-    await ctx.send(descision.readymsg())
+    dmsg = ''.join(descision.readymsg())
+    e = discord.Embed()
+    e.set_image(url=rsp['thumbnail_url'])
+    await ctx.send(dmsg, embed=e)
 
 bot.run(TOKEN)
