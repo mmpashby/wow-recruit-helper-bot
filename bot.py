@@ -9,6 +9,7 @@ import raiderio
 from discord.ext import commands
 
 ## CONFIG RELATED CONSTS
+EXPANSION = "Shadowlands"
 TOKEN = os.getenv('DISCORD_TOKEN')
 RAIDERIO_URL = "https://raider.io/api/v1"
 NO_DUNGEONS_CS = 8
