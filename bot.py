@@ -14,6 +14,8 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 RAIDERIO_URL = "https://raider.io/api/v1"
 NO_DUNGEONS_CS = 8
 FIFTEEN_TIMED = 161
+DEFAULT_REGION = "EU"
+DEFAULT_REALM = "Ragnaros"
 
 
 # TODO: break out into multi-class for character return info etc
@@ -71,7 +73,12 @@ async def on_ready():
         print(f'{bot.user.name} has established connection to raider.io...')
     else:
         print(f'{bot.user.name} could not establish connection to raider.io...exiting')
-        sys.exit(1) 
+        sys.exit(1)
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.errors.MissingRequiredArgument):
+        await ctx.send('Missing arguments. Please use `!help recruit` to print usage.')
 
 @bot.command(name='recruit',
              help='Provides rudimentary recommendation engine for recruitment purposes.',
