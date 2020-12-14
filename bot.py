@@ -44,14 +44,13 @@ class RecruitDecision:
         if self.rolescore >= self.ninetyninep:
             decision = "Recruit! Very Good - 15+ on all dungeons likely."
         elif self.rolescore >= self.sixtysixp:
-            decision = "Recruit! Check ilvl and gain more info - Average - in 66p for this season assuming 15+ 2/3 keys."
+            decision = f"Recruit! Check ilvl and gain more info - Average - in 66p ({self.sixtysixp}) for this season assuming 15+ 2/3 keys."
         elif self.rolescore < self.sixtysixp:
-            decision = "No - Below Average - below 66p for this season and likely needs work."
+            decision = f"No - Below Average - below 66p ({self.sixtysixp}) for this season and likely needs work."
         return decision
 
     def readymsg(self):
         """Make message to discord look ok"""
-        print(self.body)
         prsp = (
             f"**CharName:** {self.body['name']}\n",
             f"**Class:** {self.body['class']}\n",
@@ -63,7 +62,7 @@ class RecruitDecision:
         return prsp
 
 
-bot = commands.Bot(command_prefix='!')
+bot = commands.Bot(command_prefix='@')
 
 @bot.event
 async def on_ready():
@@ -93,7 +92,7 @@ async def recruit(ctx, player: str, role: str, region: str, realm: str):
     stat_code, grsp =  sr.get_char(**s_params)
     if stat_code == 200:
         rsp = grsp
-        descision = RecruitDecision(role, rsp)
+        descision = RecruitDecision(role.lower(), rsp)
         dmsg = ''.join(descision.readymsg())
         e.set_image(url=rsp['thumbnail_url'])
         await ctx.send(dmsg, embed=e)
